@@ -7,19 +7,25 @@ const diamondRoutes = require("./routes/diamondRoutes");
 
 dotenv.config();
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(cors());
 
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/diamond", diamondRoutes);
+
+// Error Handling Middleware
 app.use((err, req, res, next) => {
-  console.error("ERROR:", err.stack); // Logs full error stack
+  console.error("ERROR:", err.stack);
   res.status(500).json({ message: "Internal Server Error", error: err.message });
 });
 
