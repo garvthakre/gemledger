@@ -11,6 +11,7 @@ import DiamondDetails from "./pages/DiamondDetails";
 import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import './App.css';
+import Home from "./pages/Home";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -29,8 +30,9 @@ function App() {
 
   return (
     <Router>
-      <Navbar user={user} />
+            <Navbar user={user} />
       <Routes>
+        <Route path="/" element={<Home setUser={setUser} />} />
         <Route path="/signup" element={<Signup setUser={setUser} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/dashboard/processing" element={<PrivateRoute><ProcessingDashboard /></PrivateRoute>} />
@@ -40,6 +42,7 @@ function App() {
         <Route path="/dashboard/consumer" element={<PrivateRoute><ConsumerDashboard /></PrivateRoute>} />
         <Route path="/diamond/:id" element={<PrivateRoute><DiamondDetails /></PrivateRoute>} />
       </Routes>
+      
     </Router>
   );
 }
