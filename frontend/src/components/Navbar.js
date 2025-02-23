@@ -1,8 +1,18 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom"; // Import useLocation to get current path
 import { GemIcon, Menu, X } from "lucide-react";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation(); // Get current route
+
+  // Determine role from URL
+  let role = "";
+  if (location.pathname.includes("/dashboard/consumer")) {
+    role = "Consumer";
+  } else if (location.pathname.includes("/dashboard/retailer")) {
+    role = "Retailer";
+  }
 
   return (
     <nav className="bg-zinc-900 text-white">
@@ -14,9 +24,7 @@ function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex gap-16 font-semibold text-lg">
-          <div>111</div>
-          <div>211</div>
-          <div>311</div>
+          <div>Welcome, {role || "Guest"}</div> {/* Show role or Guest if no role */}
         </div>
 
         {/* Mobile Menu Button */}
@@ -31,9 +39,7 @@ function Navbar() {
       {/* Mobile Menu (Only visible when open) */}
       {isOpen && (
         <div className="md:hidden flex flex-col items-center gap-4 py-4 bg-zinc-800">
-          <div>111</div>
-          <div>211</div>
-          <div>311</div>
+          <div>Welcome, {role || "Guest"}</div>
         </div>
       )}
     </nav>

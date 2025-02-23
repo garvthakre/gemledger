@@ -11,7 +11,7 @@ export const projects = [
   {
     title: "Blockchain Security",
     description:
-      "A technology company that builds economic infrastructure for the internet.",
+      "Immutable record of ownership and authenticity.",
     link: "",
   },
   {

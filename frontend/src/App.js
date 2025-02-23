@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import './App.css';
 import Home from "./pages/Home";
+import DummyDash from "./pages/DummyDash";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -35,12 +36,19 @@ function App() {
         <Route path="/" element={<Home setUser={setUser} />} />
         <Route path="/signup" element={<Signup setUser={setUser} />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/dashboard/processing" element={<PrivateRoute><ProcessingDashboard /></PrivateRoute>} />
+        {/* <Route path="/dashboard/processing" element={<PrivateRoute><ProcessingDashboard /></PrivateRoute>} />
         <Route path="/dashboard/polishing" element={<PrivateRoute><PolishingDashboard /></PrivateRoute>} />
         <Route path="/dashboard/certification" element={<PrivateRoute><CertificationDashboard /></PrivateRoute>} />
         <Route path="/dashboard/retailer" element={<PrivateRoute><RetailerDashboard /></PrivateRoute>} />
-        <Route path="/dashboard/consumer" element={<PrivateRoute><ConsumerDashboard /></PrivateRoute>} />
-        <Route path="/diamond/:id" element={<PrivateRoute><DiamondDetails /></PrivateRoute>} />
+        <Route path="/dashboard/consumer" element={<PrivateRoute><ConsumerDashboard /></PrivateRoute>} /> */}
+        {/* Making them Public for FrontEnd Design */}
+        <Route path="/dashboard/processing" element={<ProcessingDashboard />} />
+        <Route path="/dashboard/polishing" element={<PolishingDashboard />} />
+        <Route path="/dashboard/certification" element={<CertificationDashboard />} />
+        <Route path="/dashboard/retailer" element={<RetailerDashboard />} />
+        <Route path="/dashboard/consumer" element={<ConsumerDashboard />} />
+        <Route path="/da" element={<DummyDash/>} />
+        <Route path="/diamond/:id" element={<DiamondDetails />} />
       </Routes>
       
     </Router>

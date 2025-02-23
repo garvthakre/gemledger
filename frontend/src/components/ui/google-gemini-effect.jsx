@@ -26,7 +26,7 @@ export const GoogleGeminiEffect = ({
           `Secure Diamond Authentication System!`}
       </p>
       <div
-        className="w-full h-[890px] -top-60 md:-top-40  flex items-center justify-center bg-red-transparent absolute ">
+        className="w-full h-[720px] -top-60 md:-top-40  flex items-center justify-center bg-red-transparent absolute ">
         <button
           className="font-bold bg-white rounded-full md:px-4 md:py-2 px-2 py-1 md:mt-24 mt-8 z-30 md:text-base text-black text-xs  w-fit mx-auto ">
           GemLedger
@@ -34,7 +34,7 @@ export const GoogleGeminiEffect = ({
       </div>
       <svg
         width="1440"
-        height="890"
+        height="700"
         viewBox="0 0 1440 890"
         xmlns="http://www.w3.org/2000/svg"
         className=" absolute -top-60  md:-top-40 w-full">
