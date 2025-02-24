@@ -84,14 +84,21 @@
 // ************************************************************** NEW
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Container, TextField, Button, Card, CardContent, Typography, Grid, Box, IconButton, CircularProgress
+} from "@mui/material";
+import { AddCircleOutline, ArrowForward, Diamond as DiamondIcon } from "@mui/icons-material";
 
 function ProcessingDashboard({ user }) {
   const [diamonds, setDiamonds] = useState([]);
   const [condition, setCondition] = useState("");
-  const [owner, setOwner] = useState("");
+  const [owner, setOwner] = useState(user?.id || ""); // Auto-fill logged-in user
   const [imageHash, setImageHash] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [adding, setAdding] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ Fetch diamonds on load
   useEffect(() => {
     fetch("http://localhost:5000/api/diamond/processing")
       .then((res) => res.json())
@@ -99,71 +106,136 @@ function ProcessingDashboard({ user }) {
         console.log("Fetched Diamonds:", data);
         setDiamonds(data);
       })
-      .catch((err) => console.error("Error fetching diamonds:", err));
+      .catch((err) => console.error("Error fetching diamonds:", err))
+      .finally(() => setLoading(false));
   }, []);
 
+  // ✅ Add a new diamond
   const addDiamond = async () => {
     if (!condition || !owner || !imageHash) {
       alert("Please enter all fields!");
       return;
     }
 
-    const response = await fetch("http://localhost:5000/api/diamond/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ condition, owner, imageHash }),
-    });
+    setAdding(true);
 
-    if (response.ok) {
+    try {
+      const response = await fetch("http://localhost:5000/api/diamond/create", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ condition, owner, imageHash }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create diamond");
+      }
+
+      const data = await response.json();
+      setDiamonds([...diamonds, data.diamond]); // Update UI without reload
+      setCondition("");
+      setImageHash("");
       alert("Diamond Created Successfully!");
-      window.location.reload();
-    } else {
-      const errorData = await response.json();
-      alert("Error: " + errorData.error);
+    } catch (error) {
+      alert("Error: " + error.message);
+    } finally {
+      setAdding(false);
     }
   };
 
   return (
-    <div>
-      <h2>Processing Dashboard</h2>
+    <Container maxWidth="md">
+      <Box textAlign="center" my={4}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Processing Dashboard
+        </Typography>
+      </Box>
 
-      <input
-        type="text"
-        value={condition}
-        onChange={(e) => setCondition(e.target.value)}
-        placeholder="Enter Diamond Condition"
-      />
-      <input
-        type="text"
-        value={owner}
-        onChange={(e) => setOwner(e.target.value)}
-        placeholder="Enter Owner Name"
-      />
-      <input
-        type="text"
-        value={imageHash}
-        onChange={(e) => setImageHash(e.target.value)}
-        placeholder="Enter Image Hash (IPFS CID)"
-      />
-      <button onClick={addDiamond}>Create Diamond</button>
+      {/* Add Diamond Form */}
+      <Box display="flex" flexDirection="column" gap={2}>
+        <TextField
+          label="Diamond Condition"
+          variant="outlined"
+          value={condition}
+          onChange={(e) => setCondition(e.target.value)}
+          fullWidth
+        />
+        <TextField
+          label="Owner Name"
+          variant="outlined"
+          value={owner}
+          onChange={(e) => setOwner(e.target.value)}
+          fullWidth
+          
+        />
+        <TextField
+          label="Image Hash (IPFS CID)"
+          variant="outlined"
+          value={imageHash}
+          onChange={(e) => setImageHash(e.target.value)}
+          fullWidth
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddCircleOutline />}
+          onClick={addDiamond}
+          disabled={adding}
+          fullWidth
+        >
+          {adding ? <CircularProgress size={24} /> : "Create Diamond"}
+        </Button>
+      </Box>
 
-      <h3>Diamonds List</h3>
-      {diamonds.length === 0 ? (
-        <p>No diamonds available.</p>
-      ) : (
-        <ul>
-          {diamonds.map((diamond) => (
-            <li key={diamond._id}>
-              <strong>Condition:</strong> {diamond.condition} <br />
-              <strong>Owner:</strong> {diamond.owner} <br />
-              <button onClick={() => navigate(`/transfer/${diamond._id}`)}>Transfer Ownership</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+      {/* Diamonds List */}
+      <Box mt={5}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          Diamonds List
+        </Typography>
+        {loading ? (
+          <CircularProgress />
+        ) : diamonds.length === 0 ? (
+          <Typography variant="body1">No diamonds available.</Typography>
+        ) : (
+          <Grid container spacing={3}>
+            {diamonds.map((diamond) => (
+              <Grid item xs={12} sm={6} md={4} key={diamond._id}>
+                <Card
+                  sx={{
+                    p: 2,
+                    boxShadow: 5,
+                    borderRadius: 3,
+                    background: "linear-gradient(145deg, #f0f0f0, #cacaca)",
+                  }}
+                >
+                  <CardContent>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <DiamondIcon color="primary" />
+                      <Typography variant="h6" fontWeight="bold">
+                        {diamond.condition}
+                      </Typography>
+                    </Box>
+                    <Typography variant="body2" color="textSecondary">
+                      Owner: {diamond.owner}
+                    </Typography>
+                    <Box textAlign="right" mt={2}>
+                      <IconButton
+                        color="primary"
+                        onClick={() => navigate(`/transfer/${diamond._id}`)}
+                      >
+                        <ArrowForward />
+                      </IconButton>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Box>
+    </Container>
   );
 }
 
